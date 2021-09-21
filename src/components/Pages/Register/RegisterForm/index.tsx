@@ -38,6 +38,7 @@ const RegisterForm = () => {
               <Label>Name</Label>
               <Input
                 fullWidth
+                size="small"
                 value={value}
                 onChange={onChange}
                 error={!!error}
@@ -69,6 +70,7 @@ const RegisterForm = () => {
                   ),
                 }}
                 fullWidth
+                size="small"
                 value={value}
                 onChange={onChange}
                 error={!!error}
@@ -87,6 +89,7 @@ const RegisterForm = () => {
               <Input
                 type={showPassword ? "text" : "password"}
                 fullWidth
+                size="small"
                 value={value}
                 onChange={onChange}
                 error={!!error}

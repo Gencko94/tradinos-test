@@ -44,6 +44,7 @@ const LoginForm = () => {
                     </InputAdornment>
                   ),
                 }}
+                size="small"
                 fullWidth
                 value={value}
                 onChange={onChange}
@@ -61,6 +62,7 @@ const LoginForm = () => {
             <div>
               <Label>Password</Label>
               <Input
+                size="small"
                 type={showPassword ? "text" : "password"}
                 fullWidth
                 value={value}

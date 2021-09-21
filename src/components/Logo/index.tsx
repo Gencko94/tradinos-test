@@ -18,6 +18,6 @@ const LogoImg = styled("img")(({ theme }) => ({
   cursor: "pointer",
   maxHeight: "50px",
   [theme.breakpoints.down("md")]: {
-    maxHeight: "50px",
+    maxHeight: "40px",
   },
 }));
