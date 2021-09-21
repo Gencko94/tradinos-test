@@ -5,17 +5,12 @@ import useAddTask from "../../hooks/useAddTask";
 
 const NewTask = () => {
   return (
-    <Container sx={{ p: 4 }} maxWidth="lg">
-      <Box
-        sx={{ mb: 8 }}
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-      >
+    <Container sx={{ p: { md: 8, sm: 4, xs: 2 } }}>
+      <Box sx={{ mb: 8 }}>
         <Typography
-          fontWeight="bold"
-          sx={{ fontSize: { md: 50, xs: 35 } }}
-          align="center"
+          sx={{ fontSize: { md: 60, xs: 40 } }}
+          textAlign="center"
+          // variant="h2"
         >
           Create new Task
         </Typography>

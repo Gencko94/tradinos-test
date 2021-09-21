@@ -15,9 +15,10 @@ const TasksHeader = ({ search, setSearch }: IProps) => {
       justifyContent="space-between"
       alignItems="center"
       flexWrap="wrap"
+      gap={2}
     >
       <Typography
-        sx={{ mb: { md: 0, sm: 0, xs: 4 } }}
+        sx={{ fontSize: { md: 60, xs: 40 } }}
         textAlign="center"
         variant="h2"
       >

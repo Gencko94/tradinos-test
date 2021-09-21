@@ -16,6 +16,7 @@ import { format } from "date-fns";
 import { useQueryClient } from "react-query";
 import { CATEGORY } from "../../../../interfaces/Category";
 import useToggleTaskStatus from "../../../../hooks/useToggleTaskStatus";
+import { Link } from "react-router-dom";
 interface IProps {
   task: TASK;
   handleExpand: () => void;
@@ -28,7 +29,7 @@ const Task = ({ task, handleExpand, expanded }: IProps) => {
     id,
     isDone,
   }: {
-    id: number;
+    id: string;
     isDone: boolean;
   }) => {
     try {
@@ -48,15 +49,13 @@ const Task = ({ task, handleExpand, expanded }: IProps) => {
         id="panel1a-header"
       >
         <Box flexGrow={1}>
-          <Box display="flex" justifyContent="" alignItems="center">
-            <Typography
-              sx={{ textDecoration: task.isDone ? "line-through" : "none" }}
-            >
-              {task.title}
-            </Typography>
-          </Box>
+          <Typography
+            sx={{ textDecoration: task.isDone ? "line-through" : "none" }}
+          >
+            {task.title}
+          </Typography>
+
           <Typography color="primary.light" variant="caption" sx={{ mr: 2 }}>
-            {/* Created at :{format(task.created_at, "dd-MM-yyyy")} */}
             Created at :{/* @ts-ignore */}
             {format(new Date(task.created_at), "dd-MM-yyyy", new Date())}
           </Typography>
@@ -73,17 +72,35 @@ const Task = ({ task, handleExpand, expanded }: IProps) => {
             />
           ))}
         </Box>
-        <Button
-          variant={task.isDone ? "contained" : "outlined"}
-          size="small"
-          color={task.isDone ? "success" : "primary"}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleToggleDone({ id: task.id, isDone: !task.isDone });
-          }}
+        <Box
+          display="flex"
+          justifyContent="end"
+          alignItems="center"
+          flexGrow={1}
+          gap={2}
         >
-          {task.isDone ? "Done" : "Mark as done"}
-        </Button>
+          <Button
+            variant="contained"
+            size="small"
+            component={Link}
+            color="info"
+            to={`/task/${task.id}`}
+          >
+            Details
+          </Button>
+          <Button
+            variant={task.isDone ? "contained" : "outlined"}
+            size="small"
+            sx={{ whiteSpace: "nowrap" }}
+            color={task.isDone ? "success" : "primary"}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleToggleDone({ id: task.id, isDone: !task.isDone });
+            }}
+          >
+            {task.isDone ? "Done" : "Mark as done"}
+          </Button>
+        </Box>
       </CustomAccordionSummary>
       <CustomAccordionDetails>
         <Typography sx={{ color: "secondary.main" }}>SubTasks :</Typography>
@@ -131,6 +148,8 @@ const CustomAccordionSummary = styled((props: CustomAccordionProps) => (
   "& .MuiAccordionSummary-content": {
     marginLeft: theme.spacing(1),
     alignItems: "center",
+    flexWrap: "wrap",
+    gap: 16,
   },
 }));
 const CustomAccordionDetails = styled(AccordionDetails)(({ theme }) => ({

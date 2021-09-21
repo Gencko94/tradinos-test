@@ -1,3 +1,4 @@
+import { CodeSharp } from "@mui/icons-material";
 import { useMutation, useQueryClient } from "react-query";
 import { TASK } from "../interfaces/Task";
 import { toggleTaskStatus } from "../queries/queries";
@@ -5,7 +6,7 @@ import { toggleTaskStatus } from "../queries/queries";
 const useToggleTaskStatus = () => {
   const queryClient = useQueryClient();
   return useMutation(toggleTaskStatus, {
-    onSuccess: (data) => {
+    onSuccess: (data, { id, isDone }) => {
       queryClient.setQueryData<TASK[] | undefined>(
         "tasks",
         (prev: TASK[] | undefined) => {

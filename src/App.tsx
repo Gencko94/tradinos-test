@@ -18,6 +18,7 @@ import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import NewTask from "./pages/NewTask";
 import Tasks from "./pages/Tasks";
 import Register from "./pages/Register";
+import Task from "./pages/Task";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -59,6 +60,9 @@ export default function App() {
                       </Route>
                       <Route exact path="/tasks">
                         <Tasks />
+                      </Route>
+                      <Route exact path="/task/:id">
+                        <Task />
                       </Route>
                     </Layout>
                   </Switch>

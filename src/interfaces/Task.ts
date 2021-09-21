@@ -1,7 +1,5 @@
-import { CATEGORY } from "./Category";
-
 export type TASK = {
-  id: number;
+  id: string;
   title: string;
   description: string;
   deadline: Date;
