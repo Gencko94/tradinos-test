@@ -9,12 +9,12 @@ export const Input = styled(TextField)<TextFieldProps>(({ theme }) => ({
   //     "box-shadow",
   //   ]),
   "& .MuiOutlinedInput-root": {
-    fieldset: {
-      borderColor: theme.palette.primary.main,
-    },
-    "&:hover fieldset": {
-      borderColor: theme.palette.secondary.main,
-    },
+    // fieldset: {
+    //   borderColor: theme.palette.primary.main,
+    // },
+    // "&:hover fieldset": {
+    //   borderColor: theme.palette.secondary.main,
+    // },
     // "&.Mui-focused fieldset": {
     //   borderColor: theme.palette.secondary.main,
     // },

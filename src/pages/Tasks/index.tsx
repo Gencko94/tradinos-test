@@ -21,6 +21,7 @@ const Tasks = () => {
       setExpandedTasks((prev) => [...prev, index]);
     }
   };
+  console.log(data);
   if (status === "loading" || categoriesStatus === "loading")
     return <div>Loading...</div>;
   if (status === "error" || categoriesStatus === "error")
@@ -28,6 +29,7 @@ const Tasks = () => {
   return (
     <Container sx={{ p: { md: 8, sm: 4, xs: 2 } }}>
       <TasksHeader search={search} setSearch={setSearch} />
+
       {data
         ?.filter(
           (i) => i.title.toLowerCase().indexOf(search.toLowerCase()) !== -1

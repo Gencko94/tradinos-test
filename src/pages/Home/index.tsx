@@ -6,7 +6,7 @@ import HowItWorks from "../../components/Pages/Home/HowItWorks";
 
 const Home = () => {
   return (
-    <Box>
+    <Box py={4}>
       <Hero />
       <HowItWorks />
       <Features />

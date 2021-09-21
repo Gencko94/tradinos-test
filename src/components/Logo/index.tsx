@@ -16,7 +16,7 @@ export default Logo;
 
 const LogoImg = styled("img")(({ theme }) => ({
   cursor: "pointer",
-  maxHeight: "60px",
+  maxHeight: "50px",
   [theme.breakpoints.down("md")]: {
     maxHeight: "50px",
   },

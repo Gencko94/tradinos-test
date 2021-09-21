@@ -1,5 +1,11 @@
-import { Button, Container, InputAdornment, Typography } from "@mui/material";
-import { Box } from "@mui/system";
+import {
+  Button,
+  Container,
+  Grid,
+  InputAdornment,
+  Typography,
+} from "@mui/material";
+import { Box, BoxProps, styled } from "@mui/system";
 import {
   Controller,
   SubmitHandler,
@@ -78,117 +84,151 @@ const NewTaskForm = () => {
       noValidate
       autoComplete="off"
       onSubmit={handleSubmit(onSubmit)}
-      sx={{ display: "grid", gap: 2 }}
-    >
-      <Controller
-        control={control}
-        name="title"
-        rules={{ required: "Required" }}
-        render={({ field: { onChange, value }, fieldState: { error } }) => (
-          <div>
-            <Label>Task Title</Label>
-            <Input
-              fullWidth
-              value={value}
-              onChange={onChange}
-              error={!!error}
-              size="small"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SubtitlesIcon color="secondary" />
-                  </InputAdornment>
-                ),
-              }}
-              helperText={error ? error.message : null}
-            />
-          </div>
-        )}
-      />
-      <Controller
-        control={control}
-        name="description"
-        rules={{ required: "Required" }}
-        render={({ field: { onChange, value }, fieldState: { error } }) => (
-          <div>
-            <Label>Task description</Label>
-            <Input
-              multiline
-              rows={4}
-              fullWidth
-              value={value}
-              onChange={onChange}
-              error={!!error}
-              helperText={error ? error.message : null}
-            />
-          </div>
-        )}
-      />
-      <Controller
-        control={control}
-        name="deadline"
-        rules={{ required: "Required" }}
-        render={({ field: { onChange, value }, fieldState: { error } }) => (
-          <div>
-            <Label>Task Deadline</Label>
-            <DatePicker
-              // defaultValue={new Date.now()}
-              disablePast
-              value={value}
-              onChange={(newValue) => {
-                console.log(newValue);
-                onChange(newValue);
-              }}
-              renderInput={(params) => <Input size="small" {...params} />}
-            />
-          </div>
-        )}
-      />
-      <Controller
-        control={control}
-        name="categories"
-        render={({ field: { onChange, value }, fieldState: { error } }) => (
-          <div>
-            <Label>Categories</Label>
-            <Select
-              isLoading={categoriesLoading}
-              isMulti
-              value={value}
-              options={categories}
-              menuPortalTarget={document.body}
-              onChange={onChange}
-              getOptionLabel={(option) => option.name}
-              getOptionValue={(option) => option.id.toString()}
-              menuShouldScrollIntoView={false}
-            />
-          </div>
-        )}
-      />
-      <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Typography color="secondary" variant="h6">
-          Subtasks
-        </Typography>
-        <Button
-          variant="contained"
-          color="secondary"
-          size="small"
-          endIcon={<ControlPointIcon />}
-          onClick={() => append({})}
-        >
-          Add new Subtask
-        </Button>
-      </Box>
-      {fields.map((field, index) => {
-        return (
-          <SubTask
-            remove={remove}
-            key={field.id}
-            parentIndex={index}
-            control={control}
-          />
-        );
-      })}
 
+      // sx={{ display: "grid", gap: 2 }}
+    >
+      <Grid
+        container
+        spacing={4}
+
+        // sx={{ display: "grid", gap: 2 }}
+      >
+        <Grid md={6} xs={12} item>
+          <Controller
+            control={control}
+            name="title"
+            rules={{ required: "Required" }}
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
+              <Box mb={3}>
+                <Label>Task Title</Label>
+                <Input
+                  fullWidth
+                  value={value}
+                  onChange={onChange}
+                  error={!!error}
+                  size="small"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SubtitlesIcon color="secondary" />
+                      </InputAdornment>
+                    ),
+                  }}
+                  helperText={error ? error.message : null}
+                />
+              </Box>
+            )}
+          />
+          <Controller
+            control={control}
+            name="description"
+            rules={{ required: "Required" }}
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
+              <Box mb={3}>
+                <Label>Task description</Label>
+                <Input
+                  multiline
+                  rows={4}
+                  fullWidth
+                  value={value}
+                  onChange={onChange}
+                  error={!!error}
+                  helperText={error ? error.message : null}
+                />
+              </Box>
+            )}
+          />
+          <Controller
+            control={control}
+            name="deadline"
+            rules={{ required: "Required" }}
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
+              <Box mb={3}>
+                <Label>Task Deadline</Label>
+                <DatePicker
+                  // defaultValue={new Date.now()}
+                  disablePast
+                  value={value}
+                  onChange={(newValue) => {
+                    console.log(newValue);
+                    onChange(newValue);
+                  }}
+                  renderInput={(params) => <Input size="small" {...params} />}
+                />
+              </Box>
+            )}
+          />
+          <Controller
+            control={control}
+            name="categories"
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
+              <div>
+                <Label>Categories</Label>
+                <Select
+                  isLoading={categoriesLoading}
+                  isMulti
+                  value={value}
+                  options={categories}
+                  menuPortalTarget={document.body}
+                  onChange={onChange}
+                  getOptionLabel={(option) => option.name}
+                  getOptionValue={(option) => option.id.toString()}
+                  menuShouldScrollIntoView={false}
+                />
+              </div>
+            )}
+          />
+        </Grid>
+        <Grid md={6} xs={12} item>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            mb={2}
+          >
+            <Typography
+              component="label"
+              color="secondary"
+              sx={{ display: "block", fontSize: { md: 18, xs: 15 } }}
+              fontWeight="500"
+            >
+              Subtasks
+            </Typography>
+            <Button
+              variant="contained"
+              color="secondary"
+              size="small"
+              endIcon={<ControlPointIcon />}
+              onClick={() => append({ name: "" })}
+            >
+              Add new Subtask
+            </Button>
+          </Box>
+          {fields.length === 0 && (
+            <EmptyTable
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Typography color="secondary" variant="subtitle1">
+                No Subtasks added
+              </Typography>
+            </EmptyTable>
+          )}
+          <Box p={2}>
+            {fields.map((field, index) => {
+              return (
+                <SubTask
+                  remove={remove}
+                  key={field.id}
+                  parentIndex={index}
+                  control={control}
+                />
+              );
+            })}
+          </Box>
+        </Grid>
+      </Grid>
       <LoadingButton
         loading={isLoading}
         fullWidth
@@ -204,3 +244,12 @@ const NewTaskForm = () => {
 };
 
 export default NewTaskForm;
+
+const EmptyTable = styled((props: BoxProps) => <Box {...props} />)(
+  ({ theme }) => ({
+    border: `1px solid ${theme.palette.primary.main}`,
+    borderRadius: "6px",
+    padding: theme.spacing(2),
+    minHeight: "200px",
+  })
+);

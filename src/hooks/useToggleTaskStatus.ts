@@ -1,8 +1,30 @@
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
+import { TASK } from "../interfaces/Task";
 import { toggleTaskStatus } from "../queries/queries";
 
 const useToggleTaskStatus = () => {
-  return useMutation(toggleTaskStatus);
+  const queryClient = useQueryClient();
+  return useMutation(toggleTaskStatus, {
+    onSuccess: (data) => {
+      queryClient.setQueryData<TASK[] | undefined>(
+        "tasks",
+        (prev: TASK[] | undefined) => {
+          const { id, isDone } = data;
+
+          if (prev) {
+            const found = prev.findIndex((task: any) => task.id === id);
+
+            if (typeof found !== "undefined") {
+              const oldData = [...prev];
+
+              oldData[found].isDone = isDone;
+              return [...oldData];
+            }
+          }
+        }
+      );
+    },
+  });
 };
 
 export default useToggleTaskStatus;

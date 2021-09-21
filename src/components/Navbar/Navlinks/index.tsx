@@ -21,6 +21,7 @@ const NavLinks = () => {
         to="/new-task"
         sx={{
           color: "primary.contrastText",
+
           display: { md: "inline-block", xs: "none" },
         }}
       >

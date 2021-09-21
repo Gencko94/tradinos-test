@@ -64,7 +64,12 @@ const Video = styled("img")(({ theme }) => ({
   transform: "translate(-50%,-50%)",
   width: "100px",
 
-  [theme.breakpoints.up("md")]: { left: "50%", top: "50%", width: "200px" },
+  [theme.breakpoints.up("md")]: {
+    left: "50%",
+    top: "50%",
+    width: "170px",
+    height: "150px",
+  },
 }));
 const SittingGuy = styled("img")(({ theme }) => ({
   position: "absolute",

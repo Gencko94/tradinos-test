@@ -2,8 +2,6 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  IconButton,
-  Paper,
   Typography,
   AccordionProps,
   AccordionSummaryProps,
@@ -13,10 +11,8 @@ import {
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 import { Box, styled } from "@mui/system";
 import { TASK } from "../../../../interfaces/Task";
-import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { format, parse } from "date-fns";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+
+import { format } from "date-fns";
 import { useQueryClient } from "react-query";
 import { CATEGORY } from "../../../../interfaces/Category";
 import useToggleTaskStatus from "../../../../hooks/useToggleTaskStatus";
@@ -52,13 +48,12 @@ const Task = ({ task, handleExpand, expanded }: IProps) => {
         id="panel1a-header"
       >
         <Box flexGrow={1}>
-          <Box
-            display="flex"
-            justifyContent=""
-            alignItems="center"
-            // sx={{ flexDirection: { xs: "column" } }}
-          >
-            <Typography>{task.title}</Typography>
+          <Box display="flex" justifyContent="" alignItems="center">
+            <Typography
+              sx={{ textDecoration: task.isDone ? "line-through" : "none" }}
+            >
+              {task.title}
+            </Typography>
           </Box>
           <Typography color="primary.light" variant="caption" sx={{ mr: 2 }}>
             {/* Created at :{format(task.created_at, "dd-MM-yyyy")} */}
@@ -79,6 +74,9 @@ const Task = ({ task, handleExpand, expanded }: IProps) => {
           ))}
         </Box>
         <Button
+          variant={task.isDone ? "contained" : "outlined"}
+          size="small"
+          color={task.isDone ? "success" : "primary"}
           onClick={(e) => {
             e.stopPropagation();
             handleToggleDone({ id: task.id, isDone: !task.isDone });
@@ -132,6 +130,7 @@ const CustomAccordionSummary = styled((props: CustomAccordionProps) => (
   },
   "& .MuiAccordionSummary-content": {
     marginLeft: theme.spacing(1),
+    alignItems: "center",
   },
 }));
 const CustomAccordionDetails = styled(AccordionDetails)(({ theme }) => ({
