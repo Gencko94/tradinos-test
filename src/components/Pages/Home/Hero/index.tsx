@@ -1,6 +1,5 @@
-import { Container, Typography } from "@mui/material";
-import { Box, styled } from "@mui/system";
-import CTA from "./CTA";
+import { Container } from "@mui/material";
+
 import Headline from "./Headline";
 
 const Hero = () => {

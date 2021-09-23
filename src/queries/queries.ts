@@ -1,7 +1,7 @@
 // export const uri = "http://localhost:4000";
-export const uri = "https://tradinos-mock-api.herokuapp.com";
 import axios from "axios";
 import { NEW_TASK } from "../components/Pages/NewTask/NewTaskForm";
+export const uri = "https://tradinos-mock-api.herokuapp.com";
 
 export const getTask = async (id: string) => {
   const res = await axios.get(`${uri}/task/${id}`);

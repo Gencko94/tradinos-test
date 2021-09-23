@@ -2,7 +2,6 @@ import { IconButton, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { Control, Controller } from "react-hook-form";
 import { Input } from "../../../../Input";
-import Label from "../../../../Label";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import { NEW_TASK } from "..";
 interface IProps {

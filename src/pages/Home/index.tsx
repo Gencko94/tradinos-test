@@ -1,4 +1,3 @@
-import { Container, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import Features from "../../components/Pages/Home/Features";
 import Hero from "../../components/Pages/Home/Hero";

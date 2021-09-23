@@ -1,20 +1,9 @@
-import {
-  AppBar,
-  Button,
-  IconButton,
-  Toolbar,
-  Typography,
-  makeStyles,
-  CardMedia,
-} from "@mui/material";
+import { AppBar, Toolbar } from "@mui/material";
 
 import { Box } from "@mui/system";
-import MenuIcon from "@mui/icons-material/Menu";
-import { useHistory } from "react-router";
 import Logo from "../Logo";
 import NavLinks from "./Navlinks";
 const Navbar = () => {
-  const { push } = useHistory();
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar elevation={0} color="primary" position="static">

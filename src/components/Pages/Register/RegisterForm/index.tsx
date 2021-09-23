@@ -1,6 +1,6 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Button, IconButton, InputAdornment, Paper } from "@mui/material";
-import { alpha, Box, styled } from "@mui/system";
+import { Box } from "@mui/system";
 import { useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { Input } from "../../../Input";
@@ -10,15 +10,8 @@ import EmailIcon from "@mui/icons-material/Email";
 import PasswordIcon from "@mui/icons-material/Password";
 import { RegisterTypes } from "../../../../interfaces/RegisterTypes";
 const RegisterForm = () => {
-  const {
-    register,
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm<RegisterTypes>();
-  const onSubmit: SubmitHandler<RegisterTypes> = (data) => {
-    console.log(data);
-  };
+  const { handleSubmit, control } = useForm<RegisterTypes>();
+  const onSubmit: SubmitHandler<RegisterTypes> = (data) => {};
   const [showPassword, setShowPassword] = useState(false);
   return (
     <Paper elevation={4} sx={{ p: 4 }}>

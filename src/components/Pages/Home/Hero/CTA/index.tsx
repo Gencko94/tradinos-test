@@ -1,6 +1,5 @@
 import { Button } from "@mui/material";
 import ControlPointIcon from "@mui/icons-material/ControlPoint";
-import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
 const CTA = () => {
   return (

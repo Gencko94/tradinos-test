@@ -1,4 +1,4 @@
-import { Container, Typography, Button, Chip } from "@mui/material";
+import { Container, Typography, Button, Chip, Paper } from "@mui/material";
 import { Box } from "@mui/system";
 import { format } from "date-fns";
 import { useQueryClient } from "react-query";
@@ -35,7 +35,7 @@ const Task = () => {
   if (status === "loading" || categoriesStatus === "loading")
     return <div>Loading...</div>;
   return (
-    <Container sx={{ p: { md: 8, sm: 4, xs: 2 } }}>
+    <Container maxWidth="xl" sx={{ p: { md: 8, sm: 4, xs: 2 } }}>
       <Box
         alignItems="center"
         justifyContent="space-between"
@@ -66,7 +66,7 @@ const Task = () => {
             sx={{ mr: 2 }}
           >
             Created at :{/* @ts-ignore */}
-            {format(new Date(data?.created_at), "dd-MM-yyyy", new Date())}
+            {format(new Date(data?.created_at), "dd-MM-yyyy")}
           </Typography>
           <Button
             variant={data?.isDone ? "contained" : "outlined"}
@@ -82,64 +82,46 @@ const Task = () => {
         </Box>
       </Box>
       <Hr />
-      <Box
-        alignItems="center"
-        justifyContent="space-between"
-        display="flex"
-        flexWrap="wrap"
-        gap={1}
-        mb={2}
-      >
-        <Box alignItems="center" justifyContent="center" display="flex">
-          <Typography color="info" variant="button" textAlign="end">
-            Task Categories :{" "}
-            {data?.categories.length === 0 && "No Categories Set"}
+      <Box component={Paper} p={4}>
+        <Box
+          alignItems="center"
+          justifyContent="space-between"
+          display="flex"
+          flexWrap="wrap"
+          gap={1}
+          mb={2}
+        >
+          <Box alignItems="center" justifyContent="center" display="flex">
+            <Typography color="info" variant="button" textAlign="end">
+              Task Categories :{" "}
+              {data?.categories.length === 0 && "No Categories Set"}
+            </Typography>
+            {data?.categories.map((category) => (
+              <Chip
+                size="medium"
+                sx={{
+                  ml: 1,
+                  backgroundColor: categories?.find(
+                    (cat) => cat?.id === category
+                  )?.color,
+                  color: "#fff",
+                }}
+                label={categories?.find((cat) => cat?.id === category)?.name}
+              />
+            ))}
+          </Box>
+          <Typography color="error" variant="subtitle1" textAlign="end">
+            Task Deadine :{/* @ts-ignore */}
+            {format(new Date(data?.deadline), "dd-MM-yyyy", new Date())}
           </Typography>
-          {data?.categories.map((category) => (
-            <Chip
-              size="medium"
-              sx={{
-                ml: 1,
-                backgroundColor: categories?.find((cat) => cat?.id === category)
-                  ?.color,
-                color: "#fff",
-              }}
-              label={categories?.find((cat) => cat?.id === category)?.name}
-            />
-          ))}
         </Box>
-        <Typography color="error" variant="subtitle1" textAlign="end">
-          Task Deadine :{/* @ts-ignore */}
-          {format(new Date(data?.deadline), "dd-MM-yyyy", new Date())}
+        <Typography
+          sx={{ mb: { md: 2, sm: 2, xs: 4 } }}
+          variant="h5"
+          color="secondary"
+        >
+          Task description :
         </Typography>
-      </Box>
-      <Typography
-        sx={{ mb: { md: 2, sm: 2, xs: 4 } }}
-        variant="h5"
-        color="secondary"
-      >
-        Task description :
-      </Typography>
-      <Box
-        p={2}
-        sx={{
-          borderStyle: "solid",
-          borderWidth: "1px",
-          borderColor: "primary.main",
-          borderRadius: "6px",
-        }}
-      >
-        <Typography variant="body1">{data?.description}</Typography>
-      </Box>
-      <Hr />
-      <Typography
-        sx={{ mb: { md: 2, sm: 2, xs: 4 } }}
-        variant="h5"
-        color="secondary"
-      >
-        Subtasks :
-      </Typography>
-      {data?.subtasks.length === 0 && (
         <Box
           p={2}
           sx={{
@@ -149,18 +131,39 @@ const Task = () => {
             borderRadius: "6px",
           }}
         >
-          <Typography variant="body1">No Subtasks were added</Typography>
+          <Typography variant="body1">{data?.description}</Typography>
         </Box>
-      )}
-      <ul>
-        {data?.subtasks.map((subtask) => (
-          <li key={subtask.name}>
-            <Typography sx={{ mb: { md: 2, sm: 2, xs: 4 } }} variant="h6">
-              {subtask.name}
-            </Typography>
-          </li>
-        ))}
-      </ul>
+        <Hr />
+        <Typography
+          sx={{ mb: { md: 2, sm: 2, xs: 4 } }}
+          variant="h5"
+          color="secondary"
+        >
+          Subtasks :
+        </Typography>
+        {data?.subtasks.length === 0 && (
+          <Box
+            p={2}
+            sx={{
+              borderStyle: "solid",
+              borderWidth: "1px",
+              borderColor: "primary.main",
+              borderRadius: "6px",
+            }}
+          >
+            <Typography variant="body1">No Subtasks were added</Typography>
+          </Box>
+        )}
+        <ul>
+          {data?.subtasks.map((subtask) => (
+            <li key={subtask.name}>
+              <Typography sx={{ mb: { md: 2, sm: 2, xs: 4 } }} variant="h6">
+                {subtask.name}
+              </Typography>
+            </li>
+          ))}
+        </ul>
+      </Box>
     </Container>
   );
 };

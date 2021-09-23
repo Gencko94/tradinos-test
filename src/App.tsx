@@ -1,5 +1,3 @@
-import Container from "@mui/material/Container";
-import { Button, Typography } from "@mui/material";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { ThemeProvider } from "@mui/system";
 import { theme } from "./styles/globalTheme";
@@ -19,13 +17,7 @@ import NewTask from "./pages/NewTask";
 import Tasks from "./pages/Tasks";
 import Register from "./pages/Register";
 import Task from "./pages/Task";
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+
 export default function App() {
   const queryClient = new QueryClient();
   return (

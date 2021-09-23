@@ -1,4 +1,3 @@
-import { CodeSharp } from "@mui/icons-material";
 import { useMutation, useQueryClient } from "react-query";
 import { TASK } from "../interfaces/Task";
 import { toggleTaskStatus } from "../queries/queries";

@@ -1,4 +1,4 @@
-import { Input, InputBase, Typography } from "@mui/material";
+import { InputBase, Typography } from "@mui/material";
 import { alpha, Box, styled } from "@mui/system";
 import SearchIcon from "@mui/icons-material/Search";
 import { Dispatch, SetStateAction } from "react";
@@ -44,7 +44,7 @@ const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
   border: `1px solid ${theme.palette.secondary.main}`,
-  backgroundColor: alpha(theme.palette.common.white, 0.65),
+  backgroundColor: alpha(theme.palette.common.white, 1),
   "&:hover": {
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
