@@ -113,7 +113,7 @@ const Task = ({
       const hoverBoundingRect = ref.current?.getBoundingClientRect();
 
       // Get hovered item middle height
-      const hoverMiddleY =
+      const hoveredItemVerticalCenter =
         (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
 
       // Get hovered item first quarter height
@@ -124,26 +124,42 @@ const Task = ({
       const clientOffset = monitor.getClientOffset();
       // Get pixels to the top
       const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
-      // console.log(hoverMiddleY, "middle");
+
       // console.log(hoverFirstQuarterY, "first");
 
       // Only perform the move when the mouse has crossed half of the items height
       // When dragging downwards, only move when the cursor is below 50%
       // When dragging upwards, only move when the cursor is above 50%
 
+      const draggingDownwards = dragIndex < hoverIndex;
+      const draggingUpwards = dragIndex > hoverIndex;
+
       // Dragging downwards
-      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-        console.log("yes");
+      // if (draggingDownwards && hoverClientY < hoveredItemVerticalCenter) {
+      //   console.log("over the middle");
+      //   moveCard(dragIndex, hoverIndex);
+      //   item.index = hoverIndex;
+      //   return;
+      // }
+
+      // // Dragging upwards
+      // if (draggingUpwards && hoverClientY > hoveredItemVerticalCenter) {
+      //   console.log("over the middle");
+      //   moveCard(dragIndex, hoverIndex);
+      //   item.index = hoverIndex;
+      //   return;
+      // }
+      if (dragIndex < hoverIndex && hoverClientY < hoveredItemVerticalCenter) {
         return;
       }
 
       // Dragging upwards
-      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+      if (dragIndex > hoverIndex && hoverClientY > hoveredItemVerticalCenter) {
         return;
       }
 
       // Time to actually perform the action
-      console.log("moving");
+
       moveCard(dragIndex, hoverIndex);
 
       // Note: we're mutating the monitor item here!
@@ -157,8 +173,9 @@ const Task = ({
     () => ({
       hidden: { y: 20, opacity: 0 },
       visible: {
-        y: 0,
+        y: isDragging ? -10 : 0,
         opacity: isDragging ? 0.5 : 1,
+        rotate: isDragging ? "3deg" : "0",
       },
       exit: {
         y: -50,
