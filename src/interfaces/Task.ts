@@ -2,8 +2,8 @@ export type TASK = {
   id: string;
   title: string;
   description: string;
-  deadline: Date;
-  created_at: Date;
+  deadline: Date | string;
+  created_at: Date | string;
   categories: number[];
   subtasks: SUBTASK[];
   isDone: boolean;

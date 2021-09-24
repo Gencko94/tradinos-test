@@ -21,34 +21,33 @@ import { Box, styled } from "@mui/system";
 import { TASK } from "../../../../interfaces/Task";
 
 import { format, isAfter, isBefore } from "date-fns";
-import { useQueryClient } from "react-query";
 import { CATEGORY } from "../../../../interfaces/Category";
 import useToggleTaskStatus from "../../../../hooks/useToggleTaskStatus";
 import { Link } from "react-router-dom";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import useDeleteTask from "../../../../hooks/useDeleteTask";
 import { LoadingButton } from "@mui/lab";
+import useGetCategories from "../../../../hooks/useGetCategories";
+import { useDrag, useDrop, XYCoord } from "react-dnd";
 interface IProps {
   task: TASK;
   handleExpand: () => void;
   expanded: boolean;
+  index: number;
+  moveCard: (dragIndex: number, hoverIndex: number) => void;
+  setItems: any;
 }
-const childVariants: Variants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-  },
-  exit: {
-    y: -50,
-    opacity: 0,
-    transition: {
-      duration: 0.3,
-    },
-  },
-};
-const Task = ({ task, handleExpand, expanded }: IProps) => {
+
+const Task = ({
+  task,
+  handleExpand,
+  expanded,
+  index,
+  moveCard,
+  setItems,
+}: IProps) => {
   const { mutateAsync } = useToggleTaskStatus();
+  const ref = useRef<HTMLDivElement>(null);
   const handleToggleDone = async ({
     id,
     isDone,
@@ -60,9 +59,8 @@ const Task = ({ task, handleExpand, expanded }: IProps) => {
       await mutateAsync({ id, isDone });
     } catch (error) {}
   };
-  const queryClient = useQueryClient();
 
-  const categories = queryClient.getQueryData<CATEGORY[]>("categories");
+  const { data: categories } = useGetCategories();
   const { mutateAsync: deleteTask, isLoading } = useDeleteTask();
   const formattedLabel = useMemo(() => {
     if (task.isDone) {
@@ -88,6 +86,91 @@ const Task = ({ task, handleExpand, expanded }: IProps) => {
       await deleteTask({ id: task.id });
     } catch (error) {}
   };
+  const [{ isDragging }, dragRef] = useDrag({
+    type: "task",
+    item: { id: task.id, index },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+  const [_, dropRef] = useDrop<{ id: string; index: number }, null, {}>({
+    accept: "task",
+
+    hover: (item, monitor) => {
+      if (!ref.current) {
+        return;
+      }
+
+      const dragIndex = item.index; // (DRAGGED INDEX/ITEM)
+      const hoverIndex = index; // (DROP INDEX/ITEM)
+
+      // Don't replace items with themselves
+      if (dragIndex === hoverIndex) {
+        return;
+      }
+
+      // Determine rectangle on screen
+      const hoverBoundingRect = ref.current?.getBoundingClientRect();
+
+      // Get hovered item middle height
+      const hoverMiddleY =
+        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+
+      // Get hovered item first quarter height
+      const hoverFirstQuarterY =
+        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 3;
+
+      // Determine mouse position
+      const clientOffset = monitor.getClientOffset();
+      // Get pixels to the top
+      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
+      // console.log(hoverMiddleY, "middle");
+      // console.log(hoverFirstQuarterY, "first");
+
+      // Only perform the move when the mouse has crossed half of the items height
+      // When dragging downwards, only move when the cursor is below 50%
+      // When dragging upwards, only move when the cursor is above 50%
+
+      // Dragging downwards
+      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+        console.log("yes");
+        return;
+      }
+
+      // Dragging upwards
+      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+        return;
+      }
+
+      // Time to actually perform the action
+      console.log("moving");
+      moveCard(dragIndex, hoverIndex);
+
+      // Note: we're mutating the monitor item here!
+      // Generally it's better to avoid mutations,
+      // but it's good here for the sake of performance
+      // to avoid expensive index searches.
+      item.index = hoverIndex;
+    },
+  });
+  const childVariants = useMemo<Variants>(
+    () => ({
+      hidden: { y: 20, opacity: 0 },
+      visible: {
+        y: 0,
+        opacity: isDragging ? 0.5 : 1,
+      },
+      exit: {
+        y: -50,
+        opacity: 0,
+        transition: {
+          duration: 0.3,
+        },
+      },
+    }),
+    [isDragging]
+  );
+  dropRef(dragRef(ref));
   return (
     <Grid
       component={motion.div}
@@ -102,7 +185,7 @@ const Task = ({ task, handleExpand, expanded }: IProps) => {
       lg={4}
       item
     >
-      <Card component={Paper} elevation={4}>
+      <Card ref={ref} component={Paper} elevation={4}>
         <CardContent sx={{ borderBottom: "1px solid rgba(0,0,0,0.1)" }}>
           <Box
             display="flex"
@@ -198,7 +281,10 @@ const Task = ({ task, handleExpand, expanded }: IProps) => {
             color="error"
             sx={{ marginLeft: "0.5rem" }}
             loading={isLoading}
-            onClick={handleDeleteTask}
+            // onClick={handleDeleteTask}
+            onClick={() =>
+              setItems((prev: any) => prev.filter((t: any) => t.id !== task.id))
+            }
           >
             Delete
           </LoadingButton>
