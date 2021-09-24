@@ -2,11 +2,19 @@ import { Container, Grid, Typography } from "@mui/material";
 import { useState } from "react";
 import Task from "../../components/Pages/Tasks/Task";
 import TasksHeader from "../../components/Pages/Tasks/TasksHeader";
-import { AnimateSharedLayout } from "framer-motion";
+import { AnimatePresence, AnimateSharedLayout, motion } from "framer-motion";
 import { Box } from "@mui/system";
 import CTA from "../../components/Pages/Home/Hero/CTA";
 import useGetTasks from "../../hooks/useGetTasks";
 import useGetCategories from "../../hooks/useGetCategories";
+const containerVariants = {
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
 const Tasks = () => {
   const [search, setSearch] = useState("");
   const { data, status } = useGetTasks();
@@ -26,22 +34,34 @@ const Tasks = () => {
   return (
     <Container maxWidth="xl" sx={{ p: { md: 8, sm: 4, xs: 2 } }}>
       <TasksHeader search={search} setSearch={setSearch} />
-      <Grid container spacing={4}>
+      {data && data.length > 0 && (
         <AnimateSharedLayout>
-          {data
-            ?.filter(
-              (i) => i.title.toLowerCase().indexOf(search.toLowerCase()) !== -1
-            )
-            .map((task, index) => (
-              <Task
-                key={task.id}
-                task={task}
-                handleExpand={() => handleExpand(index)}
-                expanded={expandedTasks.includes(index)}
-              />
-            ))}
+          <Grid
+            component={motion.div}
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            container
+            spacing={4}
+          >
+            <AnimatePresence>
+              {data
+                .filter(
+                  (i) =>
+                    i.title.toLowerCase().indexOf(search.toLowerCase()) !== -1
+                )
+                .map((task, index) => (
+                  <Task
+                    key={task.id}
+                    task={task}
+                    handleExpand={() => handleExpand(index)}
+                    expanded={expandedTasks.includes(index)}
+                  />
+                ))}
+            </AnimatePresence>
+          </Grid>
         </AnimateSharedLayout>
-      </Grid>
+      )}
       {data && data.length === 0 && (
         <Container>
           <Box

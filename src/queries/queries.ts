@@ -1,7 +1,7 @@
-// export const uri = "http://localhost:4000";
 import axios from "axios";
 import { NEW_TASK } from "../components/Pages/NewTask/NewTaskForm";
-export const uri = "https://tradinos-mock-api.herokuapp.com";
+export const uri = "http://localhost:4000";
+// export const uri = "https://tradinos-mock-api.herokuapp.com";
 
 export const getTask = async (id: string) => {
   const res = await axios.get(`${uri}/task/${id}`);
@@ -27,5 +27,10 @@ export const toggleTaskStatus = async ({
   isDone: boolean;
 }) => {
   const res = await axios.patch(`${uri}/tasks`, { id, isDone });
+  return res.data;
+};
+export const deleteTask = async ({ id }: { id: string }) => {
+  const res = await axios.delete(`${uri}/tasks/${id}`);
+
   return res.data;
 };

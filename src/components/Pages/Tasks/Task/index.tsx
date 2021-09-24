@@ -14,7 +14,7 @@ import {
   CardActions,
   Checkbox,
 } from "@mui/material";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion, Variants } from "framer-motion";
 
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 import { Box, styled } from "@mui/system";
@@ -26,12 +26,27 @@ import { CATEGORY } from "../../../../interfaces/Category";
 import useToggleTaskStatus from "../../../../hooks/useToggleTaskStatus";
 import { Link } from "react-router-dom";
 import { useMemo } from "react";
+import useDeleteTask from "../../../../hooks/useDeleteTask";
+import { LoadingButton } from "@mui/lab";
 interface IProps {
   task: TASK;
   handleExpand: () => void;
   expanded: boolean;
 }
-
+const childVariants: Variants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+  },
+  exit: {
+    y: -50,
+    opacity: 0,
+    transition: {
+      duration: 0.3,
+    },
+  },
+};
 const Task = ({ task, handleExpand, expanded }: IProps) => {
   const { mutateAsync } = useToggleTaskStatus();
   const handleToggleDone = async ({
@@ -46,7 +61,9 @@ const Task = ({ task, handleExpand, expanded }: IProps) => {
     } catch (error) {}
   };
   const queryClient = useQueryClient();
+
   const categories = queryClient.getQueryData<CATEGORY[]>("categories");
+  const { mutateAsync: deleteTask, isLoading } = useDeleteTask();
   const formattedLabel = useMemo(() => {
     if (task.isDone) {
       return "Completed";
@@ -56,6 +73,7 @@ const Task = ({ task, handleExpand, expanded }: IProps) => {
       return "Expired";
     }
   }, [task.deadline, task.isDone]);
+
   const statusColor = useMemo(() => {
     if (formattedLabel === "Completed") {
       return "success";
@@ -65,8 +83,25 @@ const Task = ({ task, handleExpand, expanded }: IProps) => {
       return "warning";
     }
   }, [formattedLabel]);
+  const handleDeleteTask = async () => {
+    try {
+      await deleteTask({ id: task.id });
+    } catch (error) {}
+  };
   return (
-    <Grid component={motion.div} layout xs={12} sm={6} md={6} lg={4} item>
+    <Grid
+      component={motion.div}
+      variants={childVariants}
+      exit="exit"
+      initial="hidden"
+      animate="visible"
+      layout
+      xs={12}
+      sm={6}
+      md={6}
+      lg={4}
+      item
+    >
       <Card component={Paper} elevation={4}>
         <CardContent sx={{ borderBottom: "1px solid rgba(0,0,0,0.1)" }}>
           <Box
@@ -146,7 +181,7 @@ const Task = ({ task, handleExpand, expanded }: IProps) => {
           </Box>
           {/* <Divider /> */}
         </CardContent>
-        <CardActions disableSpacing>
+        <CardActions>
           <Button
             variant="contained"
             size="small"
@@ -157,6 +192,16 @@ const Task = ({ task, handleExpand, expanded }: IProps) => {
           >
             Details
           </Button>
+          <LoadingButton
+            variant="contained"
+            size="small"
+            color="error"
+            sx={{ marginLeft: "0.5rem" }}
+            loading={isLoading}
+            onClick={handleDeleteTask}
+          >
+            Delete
+          </LoadingButton>
         </CardActions>
       </Card>
     </Grid>
