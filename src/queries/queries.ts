@@ -34,3 +34,19 @@ export const deleteTask = async ({ id }: { id: string }) => {
 
   return res.data;
 };
+export const moveTask = async ({
+  id,
+  newIndex,
+  oldIndex,
+}: {
+  id: string;
+  newIndex: number;
+  oldIndex: number;
+}) => {
+  const res = await axios.post(`${uri}/tasks/update-task/${id}`, {
+    newIndex,
+    oldIndex,
+  });
+
+  return res.data;
+};

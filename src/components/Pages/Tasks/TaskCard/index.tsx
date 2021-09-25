@@ -14,38 +14,30 @@ import {
   CardActions,
   Checkbox,
 } from "@mui/material";
-import { AnimatePresence, motion, Variants } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 import { Box, styled } from "@mui/system";
 import { TASK } from "../../../../interfaces/Task";
 
-import { format, isAfter, isBefore } from "date-fns";
-import { CATEGORY } from "../../../../interfaces/Category";
+import { isAfter } from "date-fns";
 import useToggleTaskStatus from "../../../../hooks/useToggleTaskStatus";
 import { Link } from "react-router-dom";
-import { useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import useDeleteTask from "../../../../hooks/useDeleteTask";
 import { LoadingButton } from "@mui/lab";
 import useGetCategories from "../../../../hooks/useGetCategories";
 import { useDrag, useDrop, XYCoord } from "react-dnd";
+import useMoveTask from "../../../../hooks/useMoveTask";
+import { useQueryClient } from "react-query";
 interface IProps {
   task: TASK;
   handleExpand: () => void;
   expanded: boolean;
   index: number;
-  moveCard: (dragIndex: number, hoverIndex: number) => void;
-  setItems: any;
 }
 
-const Task = ({
-  task,
-  handleExpand,
-  expanded,
-  index,
-  moveCard,
-  setItems,
-}: IProps) => {
+const TaskCard = ({ task, handleExpand, expanded, index }: IProps) => {
   const { mutateAsync } = useToggleTaskStatus();
   const ref = useRef<HTMLDivElement>(null);
   const handleToggleDone = async ({
@@ -62,6 +54,8 @@ const Task = ({
 
   const { data: categories } = useGetCategories();
   const { mutateAsync: deleteTask, isLoading } = useDeleteTask();
+  const { mutateAsync: moveTaskMutation } = useMoveTask();
+  const queryClient = useQueryClient();
   const formattedLabel = useMemo(() => {
     if (task.isDone) {
       return "Completed";
@@ -81,6 +75,20 @@ const Task = ({
       return "warning";
     }
   }, [formattedLabel]);
+  const moveCard = useCallback(
+    async (dragIndex: number, hoverIndex: number) => {
+      const dragCardId = queryClient.getQueryData<TASK[]>("tasks")?.[dragIndex]
+        .id;
+      if (dragCardId) {
+        await moveTaskMutation({
+          id: dragCardId,
+          oldIndex: dragIndex,
+          newIndex: hoverIndex,
+        });
+      }
+    },
+    [moveTaskMutation, queryClient]
+  );
   const handleDeleteTask = async () => {
     try {
       await deleteTask({ id: task.id });
@@ -93,6 +101,7 @@ const Task = ({
       isDragging: monitor.isDragging(),
     }),
   });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, dropRef] = useDrop<{ id: string; index: number }, null, {}>({
     accept: "task",
 
@@ -116,10 +125,6 @@ const Task = ({
       const hoveredItemVerticalCenter =
         (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
 
-      // Get hovered item first quarter height
-      const hoverFirstQuarterY =
-        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 3;
-
       // Determine mouse position
       const clientOffset = monitor.getClientOffset();
       // Get pixels to the top
@@ -131,24 +136,10 @@ const Task = ({
       // When dragging downwards, only move when the cursor is below 50%
       // When dragging upwards, only move when the cursor is above 50%
 
-      const draggingDownwards = dragIndex < hoverIndex;
-      const draggingUpwards = dragIndex > hoverIndex;
+      // const draggingDownwards = dragIndex < hoverIndex;
+      // const draggingUpwards = dragIndex > hoverIndex;
 
       // Dragging downwards
-      // if (draggingDownwards && hoverClientY < hoveredItemVerticalCenter) {
-      //   console.log("over the middle");
-      //   moveCard(dragIndex, hoverIndex);
-      //   item.index = hoverIndex;
-      //   return;
-      // }
-
-      // // Dragging upwards
-      // if (draggingUpwards && hoverClientY > hoveredItemVerticalCenter) {
-      //   console.log("over the middle");
-      //   moveCard(dragIndex, hoverIndex);
-      //   item.index = hoverIndex;
-      //   return;
-      // }
       if (dragIndex < hoverIndex && hoverClientY < hoveredItemVerticalCenter) {
         return;
       }
@@ -257,7 +248,7 @@ const Task = ({
               <CustomAccordionDetails>
                 <ul style={{ margin: 0 }}>
                   {task.subtasks.map((subtask) => (
-                    <li>
+                    <li key={subtask.name}>
                       <Typography key={subtask.name}>{subtask.name}</Typography>
                     </li>
                   ))}
@@ -268,6 +259,7 @@ const Task = ({
           <Box display="flex" alignItems="center" justifyContent="flex-end">
             {task.categories.map((category) => (
               <Chip
+                key={category}
                 size="medium"
                 sx={{
                   backgroundColor: categories?.find(
@@ -298,10 +290,7 @@ const Task = ({
             color="error"
             sx={{ marginLeft: "0.5rem" }}
             loading={isLoading}
-            // onClick={handleDeleteTask}
-            onClick={() =>
-              setItems((prev: any) => prev.filter((t: any) => t.id !== task.id))
-            }
+            onClick={handleDeleteTask}
           >
             Delete
           </LoadingButton>
@@ -311,7 +300,7 @@ const Task = ({
   );
 };
 
-export default Task;
+export default TaskCard;
 const CustomAccordion = styled((props: AccordionProps) => (
   <Accordion disableGutters elevation={0} square {...props} />
 ))(({ theme }) => ({
