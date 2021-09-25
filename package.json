@@ -34,7 +34,8 @@
     "eject": "react-app-rewired eject",
     "prepare": "husky install",
     "lint:staged": "lint-staged",
-    "lint:fix": "eslint --fix ."
+    "lint:fix": "eslint --fix .",
+    "lint": "eslint ."
   },
   "browserslist": {
     "production": [
