@@ -193,7 +193,7 @@ const TaskCard = ({ task, handleExpand, expanded, index }: IProps) => {
       lg={4}
       item
     >
-      <Card ref={ref} component={Paper} elevation={4}>
+      <Card ref={ref} component={Paper} elevation={1}>
         <CardContent sx={{ borderBottom: "1px solid rgba(0,0,0,0.1)" }}>
           <Box
             display="flex"
@@ -278,7 +278,7 @@ const TaskCard = ({ task, handleExpand, expanded, index }: IProps) => {
             variant="contained"
             size="small"
             component={Link}
-            color="info"
+            color="primary"
             to={`/task/${task.id}`}
             sx={{ marginLeft: "auto" }}
           >
@@ -302,9 +302,9 @@ const TaskCard = ({ task, handleExpand, expanded, index }: IProps) => {
 
 export default TaskCard;
 const CustomAccordion = styled((props: AccordionProps) => (
-  <Accordion disableGutters elevation={0} square {...props} />
+  <Accordion disableGutters elevation={1} square {...props} />
 ))(({ theme }) => ({
-  border: `1px solid ${theme.palette.divider}`,
+  // border: `1px solid ${theme.palette.divider}`,
   borderRadius: "6px",
   "&:not(:last-child)": {
     // borderBottom: 0,

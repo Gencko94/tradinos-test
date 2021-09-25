@@ -6,7 +6,10 @@ const Layout: React.FC = ({ children }) => {
     <>
       <Navbar />
       <Box
-        sx={{ backgroundColor: "grey.100", minHeight: `calc(100vh - 89px)` }}
+        sx={{
+          // backgroundColor: "background.default",
+          minHeight: `calc(100vh - 89px)`,
+        }}
       >
         {children}
       </Box>

@@ -17,7 +17,6 @@ const Headline = () => {
           position: "relative",
         }}
         component="h1"
-        color="primary"
         fontSize={{ md: 60, xs: 32 }}
         fontWeight="bold"
         align="center"
@@ -39,7 +38,7 @@ const Headline = () => {
       <Typography
         fontSize={{ md: 20, xs: 20 }}
         fontWeight="medium"
-        color="primary"
+        color="secondary"
         fontStyle=""
         align="center"
       >

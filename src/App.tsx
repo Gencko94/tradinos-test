@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import { ThemeProvider } from "@mui/system";
-import { theme } from "./styles/globalTheme";
+
 import {
   QueryClient,
   QueryClientProvider,
@@ -17,6 +16,7 @@ import NewTask from "./pages/NewTask";
 import Tasks from "./pages/Tasks";
 import Register from "./pages/Register";
 import Task from "./pages/Task";
+import ApplicationProvider from "./contexts/ApplicationContext";
 
 export default function App() {
   const queryClient = new QueryClient();
@@ -34,7 +34,7 @@ export default function App() {
         >
           <QueryClientProvider client={queryClient}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <ThemeProvider theme={theme}>
+              <ApplicationProvider>
                 <Router>
                   <Switch>
                     <Layout>
@@ -59,7 +59,7 @@ export default function App() {
                     </Layout>
                   </Switch>
                 </Router>
-              </ThemeProvider>
+              </ApplicationProvider>
             </LocalizationProvider>
           </QueryClientProvider>
         </ErrorBoundary>

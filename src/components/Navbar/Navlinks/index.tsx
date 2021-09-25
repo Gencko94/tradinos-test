@@ -2,9 +2,13 @@ import { Button, IconButton, Menu, MenuItem } from "@mui/material";
 import { Box } from "@mui/system";
 import { Link } from "react-router-dom";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useHistory } from "react-router";
+import { ApplicationContext } from "../../../contexts/ApplicationContext";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
 const NavLinks = () => {
+  const { colorMode, handleToggleColorMode } = useContext(ApplicationContext);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const history = useHistory();
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -19,9 +23,8 @@ const NavLinks = () => {
       <Button
         component={Link}
         to="/new-task"
+        color="inherit"
         sx={{
-          color: "primary.contrastText",
-
           display: { md: "inline-block", xs: "none" },
         }}
       >
@@ -31,8 +34,8 @@ const NavLinks = () => {
       <Button
         component={Link}
         to="/tasks"
+        color="inherit"
         sx={{
-          color: "primary.contrastText",
           display: { md: "inline-block", xs: "none" },
         }}
       >
@@ -43,7 +46,6 @@ const NavLinks = () => {
         color="inherit"
         to="/login"
         sx={{
-          color: "primary.contrastText",
           display: { md: "inline-block", xs: "none" },
         }}
       >
@@ -53,13 +55,20 @@ const NavLinks = () => {
         component={Link}
         color="inherit"
         to="/register"
+        variant="outlined"
         sx={{
-          color: "primary.contrastText",
           display: { md: "inline-block", xs: "none" },
         }}
       >
         Register
       </Button>
+      <IconButton
+        sx={{ ml: 1 }}
+        onClick={() => handleToggleColorMode?.()}
+        color="inherit"
+      >
+        {colorMode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
+      </IconButton>
       <IconButton
         aria-label="more"
         id="long-button"
