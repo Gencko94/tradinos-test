@@ -11,7 +11,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import TaskCard from "../../components/Pages/Tasks/TaskCard";
 import { TASK } from "../../interfaces/Task";
 import TaskPreview from "../../components/Pages/Tasks/TaskPreview";
-
+import TasksLoadingSkeleton from "../../components/Pages/Tasks/TasksLoadingSkeleton";
 const containerVariants = {
   visible: {
     transition: {
@@ -35,14 +35,15 @@ const Tasks = () => {
     }
   };
 
-  if (status === "loading" || categoriesStatus === "loading")
-    return <div>Loading...</div>;
   if (status === "error" || categoriesStatus === "error")
     return <div>Something went wrong... please try again</div>;
   return (
     <DndProvider backend={HTML5Backend}>
       <Container maxWidth="xl" sx={{ p: { md: 8, sm: 4, xs: 2 } }}>
         <TasksHeader search={search} setSearch={setSearch} />
+        {(status === "loading" || categoriesStatus === "loading") && (
+          <TasksLoadingSkeleton />
+        )}
         {data && data.length > 0 && (
           <AnimateSharedLayout type="crossfade">
             <Grid
