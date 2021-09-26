@@ -1,43 +1,46 @@
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Typography,
-  AccordionProps,
-  AccordionSummaryProps,
   Button,
   Chip,
-  Paper,
   Grid,
   Card,
   CardContent,
   CardActions,
   Checkbox,
+  IconButton,
+  Avatar,
+  Stack,
 } from "@mui/material";
 import { motion, Variants } from "framer-motion";
-
-import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
+import DragHandleIcon from "@mui/icons-material/DragHandle";
 import { Box, styled } from "@mui/system";
 import { TASK } from "../../../../interfaces/Task";
 
-import { isAfter } from "date-fns";
 import useToggleTaskStatus from "../../../../hooks/useToggleTaskStatus";
-import { Link } from "react-router-dom";
-import { useCallback, useMemo, useRef } from "react";
+import { Dispatch, SetStateAction, useCallback, useMemo, useRef } from "react";
 import useDeleteTask from "../../../../hooks/useDeleteTask";
 import { LoadingButton } from "@mui/lab";
 import useGetCategories from "../../../../hooks/useGetCategories";
 import { useDrag, useDrop, XYCoord } from "react-dnd";
 import useMoveTask from "../../../../hooks/useMoveTask";
 import { useQueryClient } from "react-query";
+import { formatTaskLabel } from "../../../../utils/taskUtils/formatTaskLabel";
+import { getTaskStatusColor } from "../../../../utils/taskUtils/getTaskStatusColor";
 interface IProps {
   task: TASK;
   handleExpand: () => void;
   expanded: boolean;
   index: number;
+  setPreviewedTask: Dispatch<SetStateAction<TASK | null>>;
 }
 
-const TaskCard = ({ task, handleExpand, expanded, index }: IProps) => {
+const TaskCard = ({
+  task,
+  handleExpand,
+  expanded,
+  index,
+  setPreviewedTask,
+}: IProps) => {
   const { mutateAsync } = useToggleTaskStatus();
   const ref = useRef<HTMLDivElement>(null);
   const handleToggleDone = async ({
@@ -56,25 +59,9 @@ const TaskCard = ({ task, handleExpand, expanded, index }: IProps) => {
   const { mutateAsync: deleteTask, isLoading } = useDeleteTask();
   const { mutateAsync: moveTaskMutation } = useMoveTask();
   const queryClient = useQueryClient();
-  const formattedLabel = useMemo(() => {
-    if (task.isDone) {
-      return "Completed";
-    } else if (isAfter(new Date(task.deadline), new Date())) {
-      return "In Progress";
-    } else {
-      return "Expired";
-    }
-  }, [task.deadline, task.isDone]);
+  const formattedLabel = formatTaskLabel(task.isDone, task.deadline);
+  const statusColor = getTaskStatusColor(formattedLabel);
 
-  const statusColor = useMemo(() => {
-    if (formattedLabel === "Completed") {
-      return "success";
-    } else if (formattedLabel === "Expired") {
-      return "error";
-    } else {
-      return "warning";
-    }
-  }, [formattedLabel]);
   const moveCard = useCallback(
     async (dragIndex: number, hoverIndex: number) => {
       const dragCardId = queryClient.getQueryData<TASK[]>("tasks")?.[dragIndex]
@@ -94,7 +81,7 @@ const TaskCard = ({ task, handleExpand, expanded, index }: IProps) => {
       await deleteTask({ id: task.id });
     } catch (error) {}
   };
-  const [{ isDragging }, dragRef] = useDrag({
+  const [{ isDragging }, dragRef, previewRef] = useDrag({
     type: "task",
     item: { id: task.id, index },
     collect: (monitor) => ({
@@ -136,9 +123,6 @@ const TaskCard = ({ task, handleExpand, expanded, index }: IProps) => {
       // When dragging downwards, only move when the cursor is below 50%
       // When dragging upwards, only move when the cursor is above 50%
 
-      // const draggingDownwards = dragIndex < hoverIndex;
-      // const draggingUpwards = dragIndex > hoverIndex;
-
       // Dragging downwards
       if (dragIndex < hoverIndex && hoverClientY < hoveredItemVerticalCenter) {
         return;
@@ -164,9 +148,11 @@ const TaskCard = ({ task, handleExpand, expanded, index }: IProps) => {
     () => ({
       hidden: { y: 20, opacity: 0 },
       visible: {
-        y: isDragging ? -10 : 0,
-        opacity: isDragging ? 0.5 : 1,
-        rotate: isDragging ? "3deg" : "0",
+        // y: isDragging ? -10 : 0,
+        // opacity: isDragging ? 0.5 : 1,
+        // rotate: isDragging ? "3 deg" : "0",
+        opacity: 1,
+        y: 0,
       },
       exit: {
         y: -50,
@@ -176,87 +162,79 @@ const TaskCard = ({ task, handleExpand, expanded, index }: IProps) => {
         },
       },
     }),
-    [isDragging]
+    []
   );
-  dropRef(dragRef(ref));
+  dropRef(ref);
   return (
-    <Grid
-      component={motion.div}
-      variants={childVariants}
-      exit="exit"
-      initial="hidden"
-      animate="visible"
-      layout
-      xs={12}
-      sm={6}
-      md={6}
-      lg={4}
-      item
-    >
-      <Card ref={ref} component={Paper} elevation={4}>
+    <Grid ref={previewRef} xs={12} sm={6} lg={4} xl={3} item>
+      <Card
+        ref={ref}
+        component={motion.div}
+        variants={childVariants}
+        exit="exit"
+        initial="hidden"
+        animate="visible"
+        layout
+        layoutId={task.id}
+        elevation={4}
+      >
         <CardContent sx={{ borderBottom: "1px solid rgba(0,0,0,0.1)" }}>
           <Box
             display="flex"
             alignItems="center"
             justifyContent="space-between"
+            mb="0.5rem"
           >
-            <Typography
-              mb="0.5rem"
-              variant="h6"
-              sx={{ textDecoration: task.isDone ? "line-through" : "none" }}
+            <Stack direction="row" alignItems="center" spacing={2}>
+              <Typography
+                variant="h5"
+                fontWeight="medium"
+                sx={{ textDecoration: task.isDone ? "line-through" : "none" }}
+              >
+                {task.title}
+              </Typography>
+              {task.subtasks.length > 0 && (
+                <Avatar
+                  sx={{
+                    width: 24,
+                    height: 24,
+                    bgcolor: "secondary.main",
+                    color: "#fff",
+                    fontSize: "1rem",
+                  }}
+                >
+                  {task.subtasks.length}
+                </Avatar>
+              )}
+            </Stack>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="flex-end"
             >
-              {task.title}
-            </Typography>
-            <Checkbox
-              color="secondary"
-              checked={task.isDone}
-              onChange={() =>
-                handleToggleDone({ id: task.id, isDone: !task.isDone })
-              }
-            />
+              <Checkbox
+                color="secondary"
+                checked={task.isDone}
+                onChange={() =>
+                  handleToggleDone({ id: task.id, isDone: !task.isDone })
+                }
+              />
+              <IconButton ref={dragRef} sx={{ cursor: "grab" }}>
+                <DragHandleIcon />
+              </IconButton>
+            </Stack>
           </Box>
           <TaskStatus color={statusColor} size="small" label={formattedLabel} />
-          <Typography
-            mb="1rem"
-            color="grey.700"
-            fontWeight="light"
-            variant="subtitle2"
-          >
+          <Typography mb="1rem" color="text.secondary" variant="subtitle1">
             {task.description}
           </Typography>
-          {task.subtasks.length > 0 && (
-            <CustomAccordion
-              sx={{ mb: "1rem" }}
-              expanded={expanded}
-              onChange={() => task.subtasks.length > 0 && handleExpand()}
-            >
-              <CustomAccordionSummary
-                hasChildren={task.subtasks.length > 0}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-              >
-                <Box flexGrow={1}>
-                  <Typography
-                    color="primary.light"
-                    variant="subtitle2"
-                    sx={{ mr: 2 }}
-                  >
-                    Subtasks ({task.subtasks.length}) :
-                  </Typography>
-                </Box>
-              </CustomAccordionSummary>
-              <CustomAccordionDetails>
-                <ul style={{ margin: 0 }}>
-                  {task.subtasks.map((subtask) => (
-                    <li key={subtask.name}>
-                      <Typography key={subtask.name}>{subtask.name}</Typography>
-                    </li>
-                  ))}
-                </ul>
-              </CustomAccordionDetails>
-            </CustomAccordion>
-          )}
-          <Box display="flex" alignItems="center" justifyContent="flex-end">
+
+          <Box
+            display="flex"
+            gap="0.5rem"
+            alignItems="center"
+            justifyContent="flex-end"
+          >
             {task.categories.map((category) => (
               <Chip
                 key={category}
@@ -271,15 +249,13 @@ const TaskCard = ({ task, handleExpand, expanded, index }: IProps) => {
               />
             ))}
           </Box>
-          {/* <Divider /> */}
         </CardContent>
         <CardActions>
           <Button
             variant="contained"
             size="small"
-            component={Link}
             color="primary"
-            to={`/task/${task.id}`}
+            onClick={() => setPreviewedTask(task)}
             sx={{ marginLeft: "auto" }}
           >
             Details
@@ -301,50 +277,7 @@ const TaskCard = ({ task, handleExpand, expanded, index }: IProps) => {
 };
 
 export default TaskCard;
-const CustomAccordion = styled((props: AccordionProps) => (
-  <Accordion disableGutters elevation={1} square {...props} />
-))(({ theme }) => ({
-  // border: `1px solid ${theme.palette.divider}`,
-  borderRadius: "6px",
-  "&:not(:last-child)": {
-    // borderBottom: 0,
-  },
-  "&:before": {
-    display: "none",
-  },
-}));
-interface CustomAccordionProps extends AccordionSummaryProps {
-  hasChildren: boolean;
-}
-const CustomAccordionSummary = styled((props: CustomAccordionProps) => (
-  <AccordionSummary
-    expandIcon={
-      props.hasChildren ? (
-        <ArrowForwardIosSharpIcon sx={{ fontSize: "0.9rem" }} />
-      ) : null
-    }
-    {...props}
-  />
-))(({ theme }) => ({
-  backgroundColor:
-    theme.palette.mode === "dark"
-      ? "rgba(255, 255, 255, .05)"
-      : "rgba(0, 0, 0, .03)",
-  flexDirection: "row-reverse",
-  "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
-    transform: "rotate(90deg)",
-  },
-  "& .MuiAccordionSummary-content": {
-    marginLeft: theme.spacing(1),
-    alignItems: "center",
-    flexWrap: "wrap",
-    gap: 16,
-  },
-}));
-const CustomAccordionDetails = styled(AccordionDetails)(({ theme }) => ({
-  padding: theme.spacing(2),
-  borderTop: "1px solid rgba(0, 0, 0, .125)",
-}));
+
 const TaskStatus = styled(Chip)(({ theme }) => ({
   borderRadius: "6px",
   marginBottom: "1rem",

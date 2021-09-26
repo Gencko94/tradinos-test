@@ -9,6 +9,8 @@ import useGetCategories from "../../hooks/useGetCategories";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import TaskCard from "../../components/Pages/Tasks/TaskCard";
+import { TASK } from "../../interfaces/Task";
+import TaskPreview from "../../components/Pages/Tasks/TaskPreview";
 
 const containerVariants = {
   visible: {
@@ -20,7 +22,7 @@ const containerVariants = {
 
 const Tasks = () => {
   const [search, setSearch] = useState("");
-
+  const [previewedTask, setPreviewedTask] = useState<TASK | null>(null);
   const { data, status } = useGetTasks();
 
   const { status: categoriesStatus } = useGetCategories();
@@ -42,7 +44,7 @@ const Tasks = () => {
       <Container maxWidth="xl" sx={{ p: { md: 8, sm: 4, xs: 2 } }}>
         <TasksHeader search={search} setSearch={setSearch} />
         {data && data.length > 0 && (
-          <AnimateSharedLayout>
+          <AnimateSharedLayout type="crossfade">
             <Grid
               component={motion.div}
               variants={containerVariants}
@@ -64,10 +66,19 @@ const Tasks = () => {
                       handleExpand={() => handleExpand(index)}
                       expanded={expandedTasks.includes(index)}
                       index={index}
+                      setPreviewedTask={setPreviewedTask}
                     />
                   ))}
               </AnimatePresence>
             </Grid>
+            <AnimatePresence>
+              {previewedTask && (
+                <TaskPreview
+                  task={previewedTask}
+                  setPreviewedTask={setPreviewedTask}
+                />
+              )}
+            </AnimatePresence>
           </AnimateSharedLayout>
         )}
         {data && data.length === 0 && (

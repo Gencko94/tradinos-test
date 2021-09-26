@@ -3,7 +3,9 @@ import { CATEGORY } from "../interfaces/Category";
 import { getCategories } from "../queries/queries";
 
 const useGetCategories = () => {
-  return useQuery<CATEGORY[]>("categories", getCategories);
+  return useQuery<CATEGORY[]>("categories", getCategories, {
+    staleTime: 60 * 5,
+  });
 };
 
 export default useGetCategories;
