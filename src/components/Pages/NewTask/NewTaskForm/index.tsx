@@ -51,7 +51,7 @@ const NewTaskForm = () => {
     defaultValues: { deadline: new Date(), categories: [] },
   });
   const { mutateAsync, isLoading } = useAddTask();
-  const { data: categories, isLoading: categoriesLoading } = useGetCategories();
+  const { data: categories } = useGetCategories();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "subtasks",

@@ -81,6 +81,7 @@ const TaskCard = ({
       await deleteTask({ id: task.id });
     } catch (error) {}
   };
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [{ isDragging }, dragRef, previewRef] = useDrag({
     type: "task",
     item: { id: task.id, index },
