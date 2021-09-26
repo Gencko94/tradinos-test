@@ -193,7 +193,7 @@ const TaskCard = ({ task, handleExpand, expanded, index }: IProps) => {
       lg={4}
       item
     >
-      <Card ref={ref} component={Paper} elevation={1}>
+      <Card ref={ref} component={Paper} elevation={4}>
         <CardContent sx={{ borderBottom: "1px solid rgba(0,0,0,0.1)" }}>
           <Box
             display="flex"

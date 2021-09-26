@@ -15,6 +15,7 @@ export const getDesignTokens = (mode: COLOR_MODES): ThemeOptions => ({
       },
     },
   },
+  shape: { borderRadius: "12px" },
   ...(mode === "light" ? getLightTheme() : getDarkTheme()),
 });
 export const getLightTheme = (): ThemeOptions => ({
@@ -22,6 +23,7 @@ export const getLightTheme = (): ThemeOptions => ({
     primary: { main: "#710e5a", light: "#5a034f", dark: "#330036" },
     secondary: { main: "#4D042F" },
     mode: "light",
+    background: { default: "#f1f1f1" },
   },
 });
 export const getDarkTheme = (): ThemeOptions => ({

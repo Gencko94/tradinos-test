@@ -1,4 +1,14 @@
-import { Button, Grid, InputAdornment, Paper, Typography } from "@mui/material";
+import {
+  Button,
+  Chip,
+  Grid,
+  InputAdornment,
+  MenuItem,
+  OutlinedInput,
+  Paper,
+  Select,
+  Typography,
+} from "@mui/material";
 import { Box, BoxProps, styled } from "@mui/system";
 import {
   Controller,
@@ -11,7 +21,7 @@ import Label from "../../../Label";
 import SubtitlesIcon from "@mui/icons-material/Subtitles";
 import { Input } from "../../../Input";
 import { DatePicker, LoadingButton } from "@mui/lab";
-import Select from "react-select";
+// import Select from "react-select";
 // import { categories } from "../../../../data/categories";
 import SubTask from "./SubTask";
 import useAddTask from "../../../../hooks/useAddTask";
@@ -38,7 +48,7 @@ export type NEW_TASK_REQUEST = {
 };
 const NewTaskForm = () => {
   const { control, handleSubmit } = useForm<NEW_TASK>({
-    defaultValues: { deadline: new Date() },
+    defaultValues: { deadline: new Date(), categories: [] },
   });
   const { mutateAsync, isLoading } = useAddTask();
   const { data: categories, isLoading: categoriesLoading } = useGetCategories();
@@ -65,17 +75,10 @@ const NewTaskForm = () => {
       noValidate
       autoComplete="off"
       onSubmit={handleSubmit(onSubmit)}
-
-      // sx={{ display: "grid", gap: 2 }}
     >
-      <Box component={Paper} p={4} elevation={4}>
-        <Grid
-          container
-          spacing={4}
-          // component={Paper}
-          // sx={{ display: "grid", gap: 2 }}
-        >
-          <Grid md={6} xs={12} item>
+      <Grid container spacing={4}>
+        <Grid md={8} xs={12} item>
+          <Box component={Paper} p={3} elevation={4}>
             <Controller
               control={control}
               name="title"
@@ -90,6 +93,7 @@ const NewTaskForm = () => {
                     fullWidth
                     value={value}
                     onChange={onChange}
+                    placeholder="Enter Task title"
                     error={!!error}
                     size="small"
                     InputProps={{
@@ -117,6 +121,7 @@ const NewTaskForm = () => {
                   <Input
                     multiline
                     rows={4}
+                    placeholder="Enter Task description"
                     fullWidth
                     value={value}
                     onChange={onChange}
@@ -126,67 +131,14 @@ const NewTaskForm = () => {
                 </Box>
               )}
             />
-            <Controller
-              control={control}
-              name="deadline"
-              rules={{ required: "Required" }}
-              render={({
-                field: { onChange, value },
-                fieldState: { error },
-              }) => (
-                <Box mb={3}>
-                  <Label>Task Deadline</Label>
-                  <DatePicker
-                    // defaultValue={new Date.now()}
-                    disablePast
-                    value={value}
-                    onChange={(newValue) => {
-                      onChange(newValue);
-                    }}
-                    renderInput={(params) => <Input size="small" {...params} />}
-                  />
-                </Box>
-              )}
-            />
-            <Controller
-              control={control}
-              name="categories"
-              render={({
-                field: { onChange, value },
-                fieldState: { error },
-              }) => (
-                <Box mb={3}>
-                  <Label>Categories</Label>
-                  <Select
-                    isLoading={categoriesLoading}
-                    isMulti
-                    value={value}
-                    options={categories}
-                    menuPortalTarget={document.body}
-                    onChange={onChange}
-                    getOptionLabel={(option) => option.name}
-                    getOptionValue={(option) => option.id.toString()}
-                    menuShouldScrollIntoView={false}
-                  />
-                </Box>
-              )}
-            />
-          </Grid>
-          <Grid md={6} xs={12} item>
             <Box
               display="flex"
               justifyContent="space-between"
               alignItems="center"
               mb={2}
             >
-              <Typography
-                component="label"
-                color="secondary"
-                sx={{ display: "block", fontSize: { md: 18, xs: 15 } }}
-                fontWeight="500"
-              >
-                Subtasks
-              </Typography>
+              <Label>Subtasks</Label>
+
               <Button
                 variant="contained"
                 color="secondary"
@@ -208,21 +160,97 @@ const NewTaskForm = () => {
                 </Typography>
               </EmptyTable>
             )}
-            <Box p={2}>
-              {fields.map((field, index) => {
-                return (
-                  <SubTask
-                    remove={remove}
-                    key={field.id}
-                    parentIndex={index}
-                    control={control}
-                  />
-                );
-              })}
-            </Box>
-          </Grid>
+            {fields.length > 0 && (
+              <Box component={Paper} elevation={8} p={2}>
+                {fields.map((field, index) => {
+                  return (
+                    <SubTask
+                      remove={remove}
+                      key={field.id}
+                      parentIndex={index}
+                      control={control}
+                    />
+                  );
+                })}
+              </Box>
+            )}
+          </Box>
         </Grid>
-      </Box>
+        <Grid md={4} xs={12} item>
+          <Box component={Paper} p={3} elevation={4}>
+            <Controller
+              control={control}
+              name="deadline"
+              rules={{ required: "Required" }}
+              render={({
+                field: { onChange, value },
+                fieldState: { error },
+              }) => (
+                <Box mb={3}>
+                  <Label>Task Deadline</Label>
+                  <DatePicker
+                    disablePast
+                    value={value}
+                    onChange={(newValue) => {
+                      onChange(newValue);
+                    }}
+                    renderInput={(params) => (
+                      <Input size="small" fullWidth {...params} />
+                    )}
+                  />
+                </Box>
+              )}
+            />
+            <Controller
+              control={control}
+              name="categories"
+              render={({
+                field: { onChange, value },
+                fieldState: { error },
+              }) => (
+                <Box mb={3}>
+                  <Label>Task Categories</Label>
+                  <Select
+                    id="demo-multiple-chip"
+                    multiple
+                    placeholder="Select Task category"
+                    value={value}
+                    onChange={onChange}
+                    input={
+                      <OutlinedInput
+                        fullWidth
+                        placeholder="Select Task category"
+                        id="select-multiple-chip"
+                        size="small"
+                      />
+                    }
+                    renderValue={(selected) => (
+                      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                        {selected.map((value) => {
+                          return (
+                            <Chip
+                              key={value.id}
+                              label={value.name}
+                              sx={{ backgroundColor: value.color }}
+                            />
+                          );
+                        })}
+                      </Box>
+                    )}
+                  >
+                    {categories?.map((category) => (
+                      <MenuItem key={category.id} value={category as any}>
+                        {category.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Box>
+              )}
+            />
+          </Box>
+        </Grid>
+      </Grid>
+
       <LoadingButton
         loading={isLoading}
         fullWidth
@@ -239,11 +267,12 @@ const NewTaskForm = () => {
 
 export default NewTaskForm;
 
-const EmptyTable = styled((props: BoxProps) => <Box {...props} />)(
-  ({ theme }) => ({
-    border: `1px solid ${theme.palette.primary.main}`,
-    borderRadius: "6px",
-    padding: theme.spacing(2),
-    minHeight: "200px",
-  })
-);
+const EmptyTable = styled((props: BoxProps) => (
+  <Box component={Paper} elevation={8} {...props} />
+))(({ theme }) => ({
+  border: `1px solid initial`,
+  // backgroundColor:theme.palle,
+  borderRadius: "6px",
+  padding: theme.spacing(2),
+  minHeight: "200px",
+}));

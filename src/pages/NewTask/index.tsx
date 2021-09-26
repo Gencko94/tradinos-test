@@ -4,7 +4,7 @@ import NewTaskForm from "../../components/Pages/NewTask/NewTaskForm";
 
 const NewTask = () => {
   return (
-    <Container sx={{ p: { md: 5, sm: 4, xs: 2 } }}>
+    <Container maxWidth="xl" sx={{ p: { md: 5, sm: 4, xs: 2 } }}>
       <Box sx={{ mb: 4 }}>
         <Typography
           sx={{ fontSize: { md: 60, xs: 40 } }}
